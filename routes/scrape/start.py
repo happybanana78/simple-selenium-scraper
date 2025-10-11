@@ -18,6 +18,7 @@ def start_scrape():
     try:
         data = request.get_json(silent=True) or {}
         link = data.get("link")
+        do_normalize = data.get("normalize")
 
         if not link:
             return error_response(
@@ -25,6 +26,9 @@ def start_scrape():
                 error="Invalid link",
                 status_code=422
             )
+
+        if do_normalize is None or not isinstance(do_normalize, bool):
+            do_normalize = True
 
         docker_client = docker.from_env()
 
@@ -61,11 +65,14 @@ def start_scrape():
                 error=result['error'],
             )
 
-        normalized_data = normalize(result['data'])
+        if do_normalize:
+            data = normalize(result['data'])
+        else:
+            data = result['data']
 
         return success_response(
             message="Scrape successful",
-            data=normalized_data,
+            data=data,
         )
     except Exception as e:
         stop_container(selenium_container)

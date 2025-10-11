@@ -64,7 +64,8 @@ Start a scrape job for a given `link`.
 
   ```json
   {
-    "link": "https://example.com"
+    "link": "https://example.com",
+    "normalize": true
   }
   ```
 
