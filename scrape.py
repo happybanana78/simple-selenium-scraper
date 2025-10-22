@@ -1,4 +1,5 @@
-import time, random
+import time, random, requests
+from bs4 import BeautifulSoup
 from typing import Dict, Any
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -37,4 +38,38 @@ def handle_scraping(
             'success': False,
             'data': None,
             'error': f'{e}',
+        }
+
+
+def check_health(
+    link:str,
+) -> Dict[str, Any]:
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        )
+    }
+
+    try:
+        response = requests.get(link, headers=headers, timeout=15)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        if not soup.body:
+            raise ValueError("No <body> tag found in HTML, content may not have rendered correctly.")
+
+        return {
+            "success": True,
+            "data": link,
+            "error": None,
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "data": link,
+            "error": str(e),
         }

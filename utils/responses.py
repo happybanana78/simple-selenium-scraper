@@ -1,11 +1,11 @@
 from flask import jsonify
 
 
-def error_response(message:str, error:str=None, status_code:int=500):
+def error_response(message:str, data=None, error:str=None, status_code:int=500):
     return (
         jsonify({
             "message": message,
-            "data": None,
+            "data": data,
             "error": error or message,
         }),
         status_code
